@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Toy Elliptic Curve Simulation (y² = x³ + 7 mod 17)</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 20px; line-height: 1.6; background: #f9f9f9; color: #333; }
+        pre { background: #222; color: #0f0; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #007bff; color: #fff; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h2>Toy Elliptic Curve Cryptography Simulator</h2>
+    <p>Curve: <b>y² = x³ + 7 (mod 17)</b> | Base Point <b>G = (1, 5)</b> | Target Private Key <b>k = 6</b></p>
+    <button onclick="runSimulation()">Run Scalar Multiplication</button>
+    <pre id="output">Click the button above to compute G, 2G, 3G, ..., kG...</pre>
+
+    <script>
+        // Modulo arithmetic helper (handles negative numbers correctly)
+        function mod(n, m) {
+            return ((n % m) + m) % m;
+        }
+
+        // Modular multiplicative inverse using Extended Euclidean Algorithm
+        function modInverse(a, m) {
+            a = mod(a, m);
+            for (let x = 1; x < m; x++) {
+                if ((a * x) % m === 1) return x;
+            }
+            return null;
+        }
+
+        // Point addition on y² = x³ + 7 mod 17
+        function addPoints(P, Q, p = 17, a = 0) {
+            if (!P) return Q;
+            if (!Q) return P;
+
+            let x1 = P.x, y1 = P.y;
+            let x2 = Q.x, y2 = Q.y;
+            let s;
+
+            if (x1 === x2 && y1 !== y2) return null; // Point at infinity (additive identity)
+
+            if (x1 === x2 && y1 === y2) {
+                if (y1 === 0) return null;
+                // Point doubling: s = (3*x1^2 + a) / (2*y1) mod p
+                let num = mod(3 * x1 * x1 + a, p);
+                let den = modInverse(2 * y1, p);
+                s = mod(num * den, p);
+            } else {
+                // Point addition: s = (y2 - y1) / (x2 - x1) mod p
+                let num = mod(y2 - y1, p);
+                let den = modInverse(x2 - x1, p);
+                s = mod(num * den, p);
+            }
+
+            let x3 = mod(s * s - x1 - x2, p);
+            let y3 = mod(s * (x1 - x3) - y1, p);
+            return { x: x3, y: y3 };
+        }
+
+        // Scalar multiplication: Q = k * P
+        function scalarMultiply(k, P) {
+            let result = null;
+            let addend = P;
+            let steps = [];
+
+            for (let i = 1; i <= k; i++) {
+                result = addPoints(result, P);
+                steps.push(`${i}G = ${result ? `(${result.x},${result.y})` : 'Point at Infinity'}`);
+            }
+            return steps;
+        }
+
+        function runSimulation() {
+            const G = { x: 1, y: 5 };
+            const k = 6;
+            const results = scalarMultiply(k, G);
+            
+            let logText = `Starting Base Point G = (${G.x}, ${G.y})\n`;
+            logText += `Computing multiples up to k = ${k}:\n\n`;
+            logText += results.join('\n');
+            logText += `\n\nFINAL TOY PUBLIC KEY (6G): ${results[results.length - 1].split('= ')[1]}`;
+            
+            document.getElementById('output').textContent = logText;
+        }
+    </script>
+</body>
+</html>Initial comit of toy curve simulation
