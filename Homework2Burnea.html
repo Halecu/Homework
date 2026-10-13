@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMWK 2 — From Wallet Seed to Ethereum Address</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #0f172a;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #f8fafc;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: #f1f5f9;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: #fff;
+            padding: 35px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .author-badge {
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .github-btn {
+            background: #ffffff;
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .github-btn:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 28px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: #0f172a;
+            font-size: 1.35rem;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .pipeline {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            padding: 18px 22px;
+            border-radius: 8px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.9rem;
+            color: #334155;
+            white-space: pre-wrap;
+            line-height: 1.7;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #0f172a;
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>HMWK 2: From Wallet Seed to Ethereum Address</h1>
+                <div class="author-badge">Author: <strong>Burnea Andrei</strong></div>
+            </div>
+            <a href="https://github.com/Halecu/Homework" target="_blank" class="github-btn">
+                <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                View GitHub Repository
+            </a>
+        </header>
+
+        <div class="card">
+            <h2>1. The Practical Ethereum Wallet Pipeline</h2>
+            <p>Ethereum wallets convert a human-readable backup phrase into a secure, checksummed blockchain address through a strict, multi-step deterministic pipeline:</p>
+            <div class="pipeline">Mnemonic (BIP-39) 
+  ↓
+Seed (PBKDF2 / HMAC-SHA512) 
+  ↓
+Private Key (BIP-32 / BIP-44 Derivation) 
+  ↓
+Public Key (secp256k1 Elliptic-Curve Math) 
+  ↓
+Ethereum Address (Keccak-256 Hashing) 
+  ↓
+Checksummed Address (EIP-55 Mixed-Case Encoding)</div>
+        </div>
+
+        <div class="card">
+            <h2>2. Role and Purpose of Standards & Primitives</h2>
+            <ul>
+                <li><b>BIP-39 (Mnemonic Sentence & Seed):</b> Converts 12 to 24 random English words into a 512-bit master seed, making backup human-friendly while maintaining high cryptographic entropy.</li>
+                <li><b>BIP-32 (HD Key Derivation):</b> Introduces Hierarchical Deterministic wallets, allowing an infinite tree of child keys to be derived from a single master seed.</li>
+                <li><b>BIP-44 (Standard Derivation Paths):</b> Standardizes the path structure (e.g., <code>m/44'/60'/0'/0/0</code>) so different wallets can recover multi-chain accounts consistently.</li>
+                <li><b>secp256k1 (Elliptic-Curve Cryptography):</b> The specific curve used to generate public keys from private keys and sign transactions securely.</li>
+                <li><b>Keccak-256 (Hash Function):</b> Compresses public keys down to a uniform 20-byte address string using a one-way collision-resistant hash.</li>
+                <li><b>EIP-55 (Mixed-Case Checksum):</b> Applies a smart capitalization scheme based on address hashes to prevent users from losing funds due to mistyped addresses.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>3. Key Distinctions</h2>
+            <ul>
+                <li><b>Key Generation vs. Key Derivation:</b> <i>Generation</i> creates initial root randomness from scratch; <i>derivation</i> deterministically computes child keys from a master seed using strict mathematical formulas.</li>
+                <li><b>Public-Key Cryptography:</b> Asymmetric mathematics linking private and public keys ($Q = kG$) for secure authentication and digital signatures without revealing the private key.</li>
+                <li><b>Hashing:</b> A one-way mathematical function that transforms any input into a fixed-size, pseudorandom output with zero back-doors.</li>
+                <li><b>Checksums:</b> Redundant validation metadata appended or encoded into data to catch human typing or transmission errors.</li>
+                <li><b>Encoding:</b> Formatting raw binary bytes into human-readable text representations (such as Hexadecimal).</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>4. Statistical Properties</h2>
+            <p>From a statistical and probabilistic perspective, cryptographic primitives rely heavily on specific behaviors:</p>
+            <ul>
+                <li><b>Uniformity and Distribution:</b> Hash outputs (like Keccak-256) and elliptic curve coordinates approximate a uniform random distribution across their output space.</li>
+                <li><b>The Avalanche Effect:</b> A minor change (e.g., flipping a single bit) in input data alters roughly 50% of the output bits in cryptographic hashes, making inputs and outputs statistically uncorrelated.</li>
+                <li><b>Independence:</b> Private keys and addresses exhibit statistical independence, preventing attackers from predicting future keys based on past generated addresses.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>5. Temporal Context & Historical Order</h2>
+            <p><b>Approximate Historical Timeline:</b></p>
+            <ol>
+                <li><b>1977:</b> RSA public-key cryptography introduced.</li>
+                <li><b>2001:</b> SHA-2 / SHA-512 standardized by NIST.</li>
+                <li><b>2012:</b> BIP-32 (Hierarchical Deterministic wallets).</li>
+                <li><b>2013:</b> BIP-39 (Mnemonic seed phrases).</li>
+                <li><b>2014:</b> BIP-44 (Multi-account derivation paths).</li>
+                <li><b>2015:</b> SHA-3 standardized by NIST, based on the Keccak submission.</li>
+                <li><b>2016:</b> EIP-55 (Ethereum mixed-case checksum addresses).</li>
+            </ol>
+            <p><b>SHA-2 vs. Keccak / SHA-3:</b> Both are cryptographic hash functions, but Keccak was the original submission selected for SHA-3. Ethereum utilizes the original Keccak-256 specification, which differs from the finalized NIST SHA3-256 standard due to minor variations in padding and domain-separation conventions.</p>
+        </div>
+
+        <div class="card">
+            <h2>6. Why Multiple Algorithms? (Separation of Concerns)</h2>
+            <p>Ethereum uses multiple specialized techniques rather than a single algorithm because each problem in the pipeline requires distinct mathematical properties:</p>
+            <ul>
+                <li><b>BIP-39 / BIP-32 / BIP-44:</b> Optimized for human backup usability and deterministic hierarchical key organization.</li>
+                <li><b>secp256k1:</b> Optimized for asymmetric algebraic relationships required for cryptographic signing.</li>
+                <li><b>Keccak-256:</b> Optimized for fast, uniform collision-resistant compression.</li>
+                <li><b>EIP-55:</b> Optimized for human error detection and typo prevention.</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
