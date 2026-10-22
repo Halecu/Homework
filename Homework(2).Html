@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 2: Cryptography & Statistics Assignment</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --accent: #38bdf8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+        .hw-tag {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        header h1 { font-size: 2.2rem; color: var(--text); margin-bottom: 0.5rem; }
+        header p { color: var(--text-muted); font-size: 1.05rem; }
+        header a { color: var(--accent); text-decoration: none; }
+        header a:hover { text-decoration: underline; }
+        
+        section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        h2 { font-size: 1.5rem; color: var(--accent); margin-bottom: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.2rem; margin: 1rem 0 0.5rem; color: #e2e8f0; }
+        p, li { margin-bottom: 0.75rem; color: #cbd5e1; }
+        ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th { background: #1e293b; color: var(--accent); font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        
+        pre, code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background: #090d16;
+            color: #38bdf8;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        pre code { background: transparent; padding: 0; color: #f8fafc; }
+
+        .interactive-box {
+            background: #090d16;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background: var(--primary-dark); }
+        .output {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #1e293b;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="hw-tag">Homework 2</div>
+        <h1>Cryptography & Statistics Assignment</h1>
+        <p>Student: <strong>Burnea Andrei</strong> &bull; GitHub Repository: <a href="https://github.com/Halecu/Homework" target="_blank">github.com/Halecu/Homework</a></p>
+    </header>
+
+    <!-- Part 1 -->
+    <section>
+        <h2>1. Elliptic Curve Cryptography (secp256k1 Toy Scheme)</h2>
+        <p>The <strong>secp256k1</strong> curve is defined over a prime field by the short Weierstrass equation:</p>
+        <pre><code>y^2 = x^3 + 7 (mod p)</code></pre>
+        <p>In a toy implementation of an asymmetric EC-based encryption scheme (modeled after Elliptic Curve ElGamal / ECIES), messages are mapped to points on the curve, and security relies on the hardness of the Elliptic Curve Discrete Logarithm Problem (ECDLP).</p>
+        
+        <h3>Main Algorithm Steps</h3>
+        <ol>
+            <li><strong>Key Generation:</strong> Choose a private key $d$ randomly from $[1, n-1]$ (where $n$ is the base point order). Compute public key $Q = dG$ via scalar multiplication.</li>
+            <li><strong>Encryption:</strong> Encode plaintext message into a point $M$ on the curve. Choose random ephemeral integer $k$. Compute ciphertext pair: 
+                <br><code>C1 = kG</code>
+                <br><code>C2 = M + kQ</code>
+            </li>
+            <li><strong>Decryption:</strong> Using private key $d$, compute $dC_1 = kdG = kQ$. Recover message point by subtracting: 
+                <br><code>M = C2 - dC1 = (M + kQ) - kQ</code>
+            </li>
+        </ol>
+
+        <h3>Role of the Keys</h3>
+        <ul>
+            <li><strong>Private Key ($d$):</strong> Kept secret by the receiver. Essential for reversing encryption via scalar multiplication ($dC_1$) to eliminate the ephemeral masking factor.</li>
+            <li><strong>Public Key ($Q$):</strong> Distributed openly. Used by senders to encrypt messages safely without ever exposing the private key.</li>
+        </ul>
+    </section>
+
+    <!-- Part 2 -->
+    <section>
+        <h2>2. The Caesar Cipher</h2>
+        <p>The Caesar cipher is a monoalphabetic substitution cipher where every letter in the plaintext is shifted forward by a fixed integer key $k$ modulo 26.</p>
+        <ul>
+            <li><strong>Encryption:</strong> $E_k(x) = (x + k) \pmod{26}$</li>
+            <li><strong>Decryption:</strong> $D_k(x) = (x - k) \pmod{26}$</li>
+        </ul>
+
+        <div class="interactive-box">
+            <h3>Interactive Caesar Cipher Playground</h3>
+            <label for="caesar-input">Plaintext Message:</label>
+            <input type="text" id="caesar-input" value="Hello World">
+            <label for="caesar-shift">Shift Key ($k$):</label>
+            <input type="number" id="caesar-shift" value="3" min="0" max="25">
+            <button onclick="runCaesar()">Encrypt Message</button>
+            <div class="output" id="caesar-output">Ciphertext: Khoor Zruog</div>
+        </div>
+    </section>
+
+    <!-- Part 3 -->
+    <section>
+        <h2>3. Comparative Analysis</h2>
+        <p>Contrasting asymmetric elliptic curve cryptography with the classical symmetric Caesar cipher:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>secp256k1 Toy Scheme</th>
+                    <th>Caesar Cipher</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Type</strong></td>
+                    <td>Asymmetric (Public-Key)</td>
+                    <td>Symmetric (Secret-Key / Substitution)</td>
+                </tr>
+                <tr>
+                    <td><strong>Mathematical Operations</strong></td>
+                    <td>Algebraic point addition & scalar multiplication over finite fields.</td>
+                    <td>Simple modular integer arithmetic ($\pmod{26}$).</td>
+                </tr>
+                <tr>
+                    <td><strong>Key Space</strong></td>
+                    <td>Extremely large ($\approx 2^{256}$), computationally secure against exhaustive search.</td>
+                    <td>Extremely small ($26$ possible keys), trivial brute-force search.</td>
+                </tr>
+                <tr>
+                    <td><strong>Statistical Properties</strong></td>
+                    <td>High diffusion and pseudorandomness; ciphertext reveals zero information regarding plaintext letter distributions.</td>
+                    <td>Preserves single-letter frequency distributions entirely, rendering it vulnerable to statistical attacks.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Part 4 -->
+    <section>
+        <h2>4. Statistical Cryptanalysis of the Caesar Cipher</h2>
+        <p>Given a sufficiently large corpus of text, we can automatically recover the unknown shift key without brute-forcing by analyzing letter frequencies. We apply the <strong>Chi-squared ($\chi^2$) statistic</strong> to evaluate how closely decrypted candidate text matches standard English letter distributions:</p>
+        <pre><code>chi^2 = sum( (O_i - E_i)^2 / E_i )</code></pre>
+        <p>Where $O_i$ represents the observed count of letter $i$ in the decrypted test candidate, and $E_i$ is the expected frequency count derived from standard English text statistics.</p>
+
+        <div class="interactive-box">
+            <h3>Chi-Squared Cryptanalysis Solver & Test Harness</h3>
+            <label for="cipher-text-input">Ciphertext to Crack:</label>
+            <textarea id="cipher-text-input" rows="3">Khvwlqj wkxu vwdwvfulswv wr fudfn wkh flskhu.</textarea>
+            <button onclick="crackCipher()">Run Statistical Cryptanalysis</button>
+            <div class="output" id="analysis-output">Click the button above to execute frequency analysis.</div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // Caesar Cipher Demonstration Function
+    function runCaesar() {
+        const text = document.getElementById('caesar-input').value;
+        const shift = parseInt(document.getElementById('caesar-shift').value) || 0;
+        let result = "";
+
+        for (let i = 0; i < text.length; i++) {
+            let c = text[i];
+            if (c.match(/[a-z]/i)) {
+                let code = text.charCodeAt(i);
+                let base = (code >= 65 && code <= 90) ? 65 : 97;
+                c = String.fromCharCode(((code - base + shift) % 26) + base);
+            }
+            result += c;
+        }
+        document.getElementById('caesar-output').innerText = "Ciphertext: " + result;
+    }
+
+    // Standard English Letter Frequencies
+    const ENGLISH_FREQS = {
+        'A': 0.08167, 'B': 0.01492, 'C': 0.02782, 'D': 0.04253,
+        'E': 0.12702, 'F': 0.02228, 'G': 0.02015, 'H': 0.06094,
+        'I': 0.06966, 'J': 0.00153, 'K': 0.00772, 'L': 0.04025,
+        'M': 0.02406, 'N': 0.06749, 'O': 0.07507, 'P': 0.01929,
+        'Q': 0.00095, 'R': 0.05987, 'S': 0.06327, 'T': 0.09056,
+        'U': 0.02758, 'V': 0.00978, 'W': 0.02360, 'X': 0.00150,
+        'Y': 0.01974, 'Z': 0.00074
+    };
+
+    // Statistical Cryptanalysis Solver
+    function crackCipher() {
+        const ciphertext = document.getElementById('cipher-text-input').value.toUpperCase();
+        let totalLetters = 0;
+        for (let char of ciphertext) {
+            if (char >= 'A' && char <= 'Z') totalLetters++;
+        }
+
+        if (totalLetters === 0) {
+            document.getElementById('analysis-output').innerText = "Error: No alphabetic characters found in ciphertext.";
+            return;
+        }
+
+        let bestKey = 0;
+        let minChi2 = Infinity;
+        let bestDecryption = "";
+
+        for (let key = 0; key < 26; key++) {
+            let decrypted = "";
+            let obsCounts = {};
+            for (let char of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") obsCounts[char] = 0;
+
+            for (let i = 0; i < ciphertext.length; i++) {
+                let c = ciphertext[i];
+                if (c >= 'A' && c <= 'Z') {
+                    let shiftedCode = ((c.charCodeAt(0) - 65 - key + 26)
