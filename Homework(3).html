@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stochastic Penetration Simulation & Statistics Homework</title>
+    <!-- Tailwind CSS for clean styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for interactive graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed">
+
+    <!-- CONFIGURATION -->
+    <script>
+        const STUDENT_INFO = {
+            name: "Burnea Andrei",
+            githubUrl: "https://github.com/Halecu/Homework"
+        };
+    </script>
+
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- Header Section -->
+        <header class="bg-white shadow-md rounded-xl p-6 mb-8 border-t-4 border-indigo-600">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Stochastic Penetration Process & Limit Theorems</h1>
+            <p class="text-gray-600 mb-4">Statistical analysis and simulation of Bernoulli and Rademacher models in a cybersecurity context.</p>
+            <div class="flex flex-wrap gap-4 text-sm text-gray-700 bg-gray-50 p-4 rounded-lg border">
+                <div><strong>Student Name:</strong> <span id="display-name" class="text-indigo-600 font-semibold"></span></div>
+                <div><strong>GitHub Repository:</strong> <a id="display-github" href="#" target="_blank" class="text-blue-600 underline hover:text-blue-800"></a></div>
+            </div>
+        </header>
+
+        <!-- Script to inject personal info dynamically -->
+        <script>
+            document.getElementById('display-name').textContent = STUDENT_INFO.name;
+            const ghLink = document.getElementById('display-github');
+            ghLink.textContent = STUDENT_INFO.githubUrl;
+            ghLink.href = STUDENT_INFO.githubUrl;
+        </script>
+
+        <!-- Section 1: Theoretical Framework -->
+        <section class="bg-white shadow-md rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">1. Theoretical Framework & Mathematical Derivations</h2>
+            
+            <div class="space-y-4 text-gray-700">
+                <p>We model penetration scores using independent and identically distributed (i.i.d.) increments $X_1, X_2, \dots, X_n$ across $n$ systems/steps for $m$ attackers.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-blue-50 p-5 rounded-lg border border-blue-200">
+                        <h3 class="font-bold text-blue-900 text-lg mb-2">Bernoulli Model</h3>
+                        <p class="text-sm mb-2">$X_i \in \{0, 1\}$ with $P(X_i = 1) = p$</p>
+                        <ul class="list-disc list-inside text-sm space-y-1">
+                            <li><strong>Mean ($\mu$):</strong> $p$</li>
+                            <li><strong>Variance ($\sigma^2$):</strong> $p(1-p)$</li>
+                            <li><strong>Total Score Mean:</strong> $E[S_n] = np$</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-purple-50 p-5 rounded-lg border border-purple-200">
+                        <h3 class="font-bold text-purple-900 text-lg mb-2">Rademacher Model (Zero-Mean)</h3>
+                        <p class="text-sm mb-2">$X_i \in \{-1, +1\}$ with $P = 1/2$</p>
+                        <ul class="list-disc list-inside text-sm space-y-1">
+                            <li><strong>Mean ($\mu$):</strong> $0$</li>
+                            <li><strong>Variance ($\sigma^2$):</strong> $1$</li>
+                            <li><strong>Total Score Mean:</strong> $E[S_n] = 0$</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h4 class="font-semibold text-gray-900">Key Limit Theorems:</h4>
+                    <p class="text-sm mt-1"><strong>Law of Large Numbers (LLN):</strong> The average score $\frac{S_n}{n}$ converges in probability to the expected value $\mu$ as $n \to \infty$, because its variance $\frac{\sigma^2}{n} \to 0$.</p>
+                    <p class="text-sm mt-1"><strong>Central Limit Theorem (CLT):</strong> The normalized total score $\frac{S_n}{\sqrt{n}}$ (in Rademacher case) converges in distribution to a standard normal distribution $\mathcal{N}(0, 1)$ as $n \to \infty$.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive Simulation Dashboard -->
+        <section class="bg-white shadow-md rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">2. Monte Carlo Simulation Dashboard</h2>
+            
+            <div class="grid md:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Attackers ($m$)</label>
+                    <input type="number" id="input-m" value="500" class="w-full p-2 border rounded text-sm bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Steps / Systems ($n$)</label>
+                    <input type="number" id="input-n" value="200" class="w-full p-2 border rounded text-sm bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Bernoulli $p$</label>
+                    <input type="number" id="input-p" value="0.5" step="0.05" min="0" max="1" class="w-full p-2 border rounded text-sm bg-white">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="runSimulation()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded text-sm transition">Run Simulation</button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-center font-semibold text-gray-700 mb-2">Rademacher: Normalized Score Distribution ($S_n/\sqrt{n}$)</h3>
+                    <div class="h-64"><canvas id="rademacherChart"></canvas></div>
+                </div>
+                <div>
+                    <h3 class="text-center font-semibold text-gray-700 mb-2">Bernoulli: Average Score Convergence ($S_n/n$)</h3>
+                    <div class="h-64"><canvas id="bernoulliChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Cybersecurity Interpretation -->
+        <section class="bg-white shadow-md rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">3. Cybersecurity Interpretation</h2>
+            <div class="space-y-3 text-gray-700 text-sm">
+                <p><strong>Impact of System Size ($n$):</strong> In deep, multi-layered architectures ($n \gg 1$), individual attacker variance is averaged out. In a zero-sum Rademacher model, attackers gain no structural advantage over time. In biased Bernoulli systems, overall defense posture relies heavily on keeping success probability $p < 0.5$.</p>
+                <p><strong>Impact of Attacker Pool ($m$):</strong> While average metrics stabilize, a larger attacker population increases the probability of encountering extreme tail-risk outliers (attackers who beat statistical odds across all $n$ steps).</p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Simulation Script Logic -->
+    <script>
+        let radChart = null;
+        let bernChart = null;
+
+        function runSimulation() {
+            const m = parseInt(document.getElementById('input-m').value);
+            const n = parseInt(document.getElementById('input-n').value);
+            const p = parseFloat(document.getElementById('input-p').value);
+
+            // Rademacher Simulation
+            let radNormScores = [];
+            for (let i = 0; i < m; i++) {
+                let sum = 0;
+                for (let j = 0; j < n; j++) {
+                    sum += (Math.random() < 0.5 ? 1 : -1);
+                }
+                radNormScores.push(sum / Math.sqrt(n));
+            }
+
+            // Bernoulli Simulation (Average score S_n / n)
+            let bernAvgs = [];
+            for (let i = 0; i < m; i++) {
+                let sum = 0;
+                for (let j = 0; j < n; j++) {
+                    if (Math.random() < p) sum += 1;
+                }
+                bernAvgs.push(sum / n);
+            }
+
+            // Render Rademacher Histogram
+            renderHistogram('rademacherChart', radNormScores, 'Rademacher Normalized', 'rgba(99, 102, 241, 0.6)');
+            // Render Bernoulli Histogram
+            renderHistogram('bernoulliChart', bernAvgs, 'Bernoulli Average Score', 'rgba(168, 85, 247, 0.6)');
+        }
+
+        function renderHistogram(canvasId, data, label, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Create histogram bins
+            const bins = 15;
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const range = (max - min) || 1;
+            const binWidth = range / bins;
+            
+            let counts = new Array(bins).fill(0);
+            let labels = [];
+            
+            for (let i = 0; i < bins; i++) {
+                let binStart = min + i * binWidth;
+                let binEnd = binStart + binWidth;
+                labels.push(binStart.toFixed(2));
+                data.forEach(val => {
+                    if (val >= binStart && (i === bins - 1 ? val <= binEnd : val < binEnd)) {
+                        counts[i]++;
+                    }
+                });
+            }
+
+            if (window[canvasId + 'Obj']) {
+                window[canvasId + 'Obj'].destroy();
+            }
+
+            window[canvasId + 'Obj'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: counts,
+                        backgroundColor: color,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Frequency' } },
+                        x: { title: { display: true, text: 'Score Bins' } }
+                    }
+                }
+            });
+        }
+
+        // Run initial simulation on load
+        window.onload = runSimulation;
+    </script>
+</body>
+</html>
