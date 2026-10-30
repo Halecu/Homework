@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Homework: Welford's Algorithm & Sampling Distributions</title>
+    <!-- Tailwind CSS for clean, modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for interactive graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+
+    <!-- CONFIGURATION -->
+    <script>
+        const STUDENT_INFO = {
+            name: "Burnea Andrei",
+            githubUrl: "https://github.com/Halecu/Homework"
+        };
+    </script>
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Header Section -->
+        <header class="bg-white shadow-md rounded-xl p-6 mb-8 border-t-4 border-blue-600">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Statistics Homework: Welford's Algorithm & Sampling Distributions</h1>
+            <p class="text-slate-600 mb-4">Comprehensive analysis of single-pass recurrence formulas, unbiased estimators, and empirical sampling behavior in cybersecurity scoring.</p>
+            <div class="flex flex-wrap gap-6 text-sm text-slate-700 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <div><strong>Student Name:</strong> <span id="display-name" class="text-blue-600 font-semibold"></span></div>
+                <div><strong>GitHub Repository:</strong> <a id="display-github" href="#" target="_blank" class="text-blue-600 underline hover:text-blue-800"></a></div>
+            </div>
+        </header>
+
+        <!-- Script to inject personal info dynamically -->
+        <script>
+            document.getElementById('display-name').textContent = STUDENT_INFO.name;
+            const ghLink = document.getElementById('display-github');
+            ghLink.textContent = STUDENT_INFO.githubUrl;
+            ghLink.href = STUDENT_INFO.githubUrl;
+        </script>
+
+        <!-- Section 1: Exercise 1 - Welford's Recurrence Formulas -->
+        <section class="bg-white shadow-md rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 border-b pb-2">Exercise 1: Welford’s Recurrence Formulas</h2>
+            
+            <div class="space-y-4 text-slate-700">
+                <p>Welford’s algorithm calculates running means and sums of squares ($SS$) in a single pass ($O(1)$ memory per step) without storing the entire dataset. This prevents numerical instability (catastrophic cancellation) caused by standard two-pass formulas.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-blue-50 p-5 rounded-lg border border-blue-200">
+                        <h3 class="font-bold text-blue-900 text-lg mb-2">Mathematical Recurrence</h3>
+                        <ul class="list-disc list-inside text-sm space-y-2">
+                            <li><strong>Mean Update:</strong> <br>$\delta_n = x_n - M_{n-1}$<br>$M_n = M_{n-1} + \frac{\delta_n}{n}$</li>
+                            <li><strong>Sum of Squares ($M_2$) Update:</strong> <br>$S_n = S_{n-1} + \delta_n(x_n - M_n)$</li>
+                            <li><strong>Sample Variance:</strong> $s^2 = \frac{S_n}{n-1}$</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-900 text-slate-100 p-5 rounded-lg font-mono text-xs overflow-x-auto shadow-inner">
+                        <p class="text-blue-400 font-bold mb-2">// Welford Core Logic (3 Lines)</p>
+                        <p>let n = 0, mean = 0, M2 = 0;</p>
+                        <p class="text-emerald-400">for (let x of dataset) {</p>
+                        <p class="pl-4">n++;</p>
+                        <p class="pl-4">let delta = x - mean;</p>
+                        <p class="pl-4">mean += delta / n;</p>
+                        <p class="pl-4">M2 += delta * (x - mean);</p>
+                        <p class="text-emerald-400">}</p>
+                        <p class="text-slate-400 mt-2">// Variance = M2 / (n - 1)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Exercise 2 - Sampling Mean and Variance Dashboard -->
+        <section class="bg-white shadow-md rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 border-b pb-2">Exercise 2: Sampling Mean & Variance Simulation</h2>
+            
+            <div class="space-y-4 text-slate-700 mb-6">
+                <p>We simulate <span id="param-m">100</span> hackers attempting penetration across $n$ systems. Each score is drawn from a uniform discrete distribution $U[0, 10]$, with theoretical mean <strong class="text-blue-600">&#956; = 5.00</strong> and theoretical variance <strong class="text-blue-600">&#963;² = 10.00</strong>.</p>
+            </div>
+
+            <!-- Simulation Controls -->
+            <div class="grid md:grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Number of Hackers ($m$)</label>
+                    <input type="number" id="input-m" value="100" class="w-full p-2 border rounded text-sm bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Target Distribution</label>
+                    <select id="input-dist" class="w-full p-2 border rounded text-sm bg-white">
+                        <option value="uniform">Discrete Uniform [0, 10]</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="runSimulation()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition shadow">Run Simulation</button>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            <div class="overflow-x-auto mb-6">
+                <table class="w-full border-collapse border border-slate-200 text-sm text-left">
+                    <thead>
+                        <tr class="bg-blue-50 text-blue-900">
+                            <th class="border border-slate-200 p-3 text-center">Systems ($n$)</th>
+                            <th class="border border-slate-200 p-3 text-center">Avg Sample Mean</th>
+                            <th class="border border-slate-200 p-3 text-center">Theoretical Mean (&#956;)</th>
+                            <th class="border border-slate-200 p-3 text-center">Avg Sample Variance</th>
+                            <th class="border border-slate-200 p-3 text-center">Theoretical Variance (&#963;²)</th>
+                            <th class="border border-slate-200 p-3 text-center">Var of Sample Means Var(&#363;)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-table-body" class="bg-white">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Interactive Chart -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h3 class="text-center font-semibold text-slate-700 mb-2">Sampling Mean Convergence & Variability</h3>
+                    <div class="h-64"><canvas id="meanVarChart"></canvas></div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h3 class="text-center font-semibold text-slate-700 mb-2">Sample Variance Stability across $n$</h3>
+                    <div class="h-64"><canvas id="varianceStabilityChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Conclusions & Inferential Value -->
+        <section class="bg-white shadow-md rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4 border-b pb-2">Conclusions & Inferential Statistics Insights</h2>
+            <div class="space-y-3 text-slate-700 text-sm">
+                <p><strong>1. Unbiased Estimation:</strong> Across all tested values of $n$, the average of the sampling means converges precisely to the theoretical mean $\mu = 5.0$, and the average of sampling variances converges to $\sigma^2 = 10.0$, confirming that sample statistics are unbiased estimators.</p>
+                <p><strong>2. Effect of Increasing $n$:</strong> As the number of systems attempted ($n$) increases, the variance of the sample means ($\text{Var}(\bar{x}) = \frac{\sigma^2}{n}$) decreases significantly. This validates the **Law of Large Numbers** and the **Central Limit Theorem**, demonstrating that larger sample sizes provide much higher estimation precision and stability.</p>
+                <p><strong>3. Usefulness in Practice:</strong> In real-world cybersecurity auditing and threat intelligence, analysts rarely observe the entire population of potential system vulnerabilities. Using robust single-pass estimators like Welford's algorithm allows efficient computation of sample parameters with high precision.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Simulation Script Logic -->
+    <script>
+        let meanVarChartObj = null;
+        let varianceStabilityChartObj = null;
+
+        function runSimulation() {
+            const m = parseInt(document.getElementById('input-m').value) || 100;
+            const nList = [10, 50, 100, 500];
+            const muTrue = 5.0;
+            const sigma2True = 10.0;
+
+            let tableHtml = '';
+            let summaryData = {
+                n: nList,
+                avgMeans: [],
+                avgVars: [],
+                varOfMeans: []
+            };
+
+            nList.forEach(n => {
+                let hackerMeans = [];
+                let hackerVars = [];
+
+                for (let i = 0; i < m; i++) {
+                    let count = 0, mean = 0, M2 = 0;
+                    // Simulate n scores from Uniform [0, 10]
+                    for (let j = 0; j < n; j++) {
+                        let x = Math.floor(Math.random() * 11); // 0 to 10 inclusive
+                        
+                        // Welford Core Logic (3 lines)
+                        count++;
+                        let delta = x - mean;
+                        mean += delta / count;
+                        M2 += delta * (x - mean);
+                    }
+                    let sampleVar = count > 1 ? M2 / (count - 1) : 0;
+                    hackerMeans.push(mean);
+                    hackerVars.push(sampleVar);
+                }
+
+                const avgSampleMean = hackerMeans.reduce((a, b) => a + b, 0) / m;
+                const avgSampleVar = hackerVars.reduce((a, b) => a + b, 0) / m;
+                
+                // Variance of sample means
+                const varOfMeans = hackerMeans.reduce((sum, val) => sum + Math.pow(val - avgSampleMean, 2), 0) / (m - 1);
+
+                summaryData.avgMeans.push(avgSampleMean);
+                summaryData.avgVars.push(avgSampleVar);
+                summaryData.varOfMeans.push(varOfMeans);
+
+                tableHtml += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="border border-slate-200 p-3 text-center font-medium">${n}</td>
+                        <td class="border border-slate-200 p-3 text-center">${avgSampleMean.toFixed(4)}</td>
+                        <td class="border border-slate-200 p-3 text-center text-slate-500">${muTrue.toFixed(2)}</td>
+                        <td class="border border-slate-200 p-3 text-center">${avgSampleVar.toFixed(4)}</td>
+                        <td class="border border-slate-200 p-3 text-center text-slate-500">${sigma2True.toFixed(2)}</td>
+                        <td class="border border-slate-200 p-3 text-center">${varOfMeans.toFixed(4)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('results-table-body').innerHTML = tableHtml;
+            renderCharts(summaryData);
+        }
+
+        function renderCharts(data) {
+            // Mean & Var of Means Chart
+            const ctx1 = document.getElementById('meanVarChart').getContext('2d');
+            if (meanVarChartObj) meanVarChartObj.destroy();
+
+            meanVarChartObj = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: data.n.map(n => `n = ${n}`),
+                    datasets: [
+                        {
+                            label: 'Avg Sample Mean',
+                            data: data.avgMeans,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        },
+                        {
+                            label: 'Var of Sample Means',
+                            data: data.varOfMeans,
+                            borderColor: '#9333ea',
+                            backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                            tension: 0.1,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { title: { display: true, text: 'Mean Value' }, suggestedMin: 4.5, suggestedMax: 5.5 },
+                        y1: { position: 'right', title: { display: true, text: 'Variance Var(X_bar)' }, grid: { drawOnChartArea: false } }
+                    }
+                }
+            });
+
+            // Variance Stability Chart
+            const ctx2 = document.getElementById('varianceStabilityChart').getContext('2d');
+            if (varianceStabilityChartObj) varianceStabilityChartObj.destroy();
+
+            varianceStabilityChartObj = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: data.n.map(n => `n = ${n}`),
+                    datasets: [{
+                        label: 'Avg Sample Variance',
+                        data: data.avgVars,
+                        backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                        borderColor: '#2563eb',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Variance' }, suggestedMax: 12 }
+                    }
+                }
+            });
+        }
+
+        // Run simulation on page load
+        window.onload = runSimulation;
+    </script>
+</body>
+</html>
